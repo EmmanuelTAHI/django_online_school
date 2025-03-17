@@ -116,7 +116,7 @@
         <!-- Section Évaluations -->
         <div class="section">
             <h2>Ajouter une évaluation</h2>
-            <form method="post" action="{% url 'ajouter_evaluation' %}">
+            <form method="post" action="{% url 'ajouter' %}">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="titre_eval">Titre de l'évaluation:</label>

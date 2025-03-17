@@ -17,6 +17,7 @@ urlpatterns = [
     path("starter-page/", views.starter_page, name="starter-page"),
     path("trainers/", views.trainers, name="trainers"),
     path("ajouter/", views.ajouter, name="ajouter"),
+    path("add_cours/", views.add_cours, name="add_cours"),
 
     
 

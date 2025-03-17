@@ -137,28 +137,26 @@ def activate_account(request, uidb64, token):
 
 from django.shortcuts import render, redirect
 from .models import Cours, Evaluation
-from django.contrib.auth.decorators import login_required
 
-@login_required
-def dashboard_professeur(request):
-    cours_list = Cours.objects.filter(professeur=request.user)
+
+def ajouter(request):
+    cours_list = Cours.objects,
     context = {
         'cours_list': cours_list,
     }
-    return render(request, 'online_school/teacher_dashboard.html', context)
+    return render(request, 'online_school/ajouter.html', context)
 
-@login_required
-def ajouter_cours(request):
+def add_cours(request):
     if request.method == 'POST':
         Cours.objects.create(
             titre=request.POST['titre_cours'],
             description=request.POST['description'],
             professeur=request.user
         )
-        return redirect('dashboard_professeur')
-    return redirect('dashboard_professeur')
+        return redirect('ajouter')
+    return redirect('ajouter')
 
-@login_required
+
 def ajouter_devoir(request):
     if request.method == 'POST':
         Evaluation.objects.create(
@@ -166,10 +164,10 @@ def ajouter_devoir(request):
             cours_id=request.POST['cours_id'],
             date_limite=request.POST['date_limite']
         )
-        return redirect('dashboard_professeur')
-    return redirect('dashboard_professeur')
+        return redirect('ajouter')
+    return redirect('ajouter')
 
-@login_required
+
 def ajouter_evaluation(request):
     if request.method == 'POST':
         Evaluation.objects.create(
@@ -178,9 +176,8 @@ def ajouter_evaluation(request):
             date=request.POST['date_eval'],
             note_max=request.POST['note_max']
         )
-        return redirect('dashboard_professeur')
-    return redirect('dashboard_professeur')
+        return redirect('ajouter')
+    return redirect('ajouter')
 
-def ajouter(request):
-    return(request,'ajouter')
+
     
