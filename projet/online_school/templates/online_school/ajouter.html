@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de bord - Professeur</title>
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .messages {
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Bienvenue, {{ user.username }} !</h1>
+        <p>Votre rôle : Professeur</p>
+
+        <!-- Affichage des messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Section Cours -->
+        <div class="section">
+            <h2>Ajouter un nouveau cours</h2>
+            <form method="post" action="{% url 'add_cours' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="titre_cours">Titre du cours:</label>
+                    <input type="text" id="titre_cours" name="titre_cours" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" rows="4" required></textarea>
+                </div>
+                <button type="submit">Ajouter le cours</button>
+            </form>
+        </div>
+
+        <!-- Section Devoirs -->
+        <div class="section">
+            <h2>Ajouter un devoir</h2>
+            <form method="post" action="{% url 'add_cours' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="titre_devoir">Titre du devoir:</label>
+                    <input type="text" id="titre_devoir" name="titre_devoir" required>
+                </div>
+                <div class="form-group">
+                    <label for="cours">Cours associé:</label>
+                    <select id="cours" name="cours_id" required>
+                        <option value="">-- Sélectionnez un cours --</option>
+                        {% for cours in cours_list %}
+                            <option value="{{ cours.id }}">{{ cours.titre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date_limite">Date limite:</label>
+                    <input type="date" id="date_limite" name="date_limite" required>
+                </div>
+                <button type="submit">Ajouter le devoir</button>
+            </form>
+        </div>
+
+        <!-- Section Évaluations -->
+        <div class="section">
+            <h2>Ajouter une évaluation</h2>
+            <form method="post" action="{% url 'ajouter' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="titre_eval">Titre de l'évaluation:</label>
+                    <input type="text" id="titre_eval" name="titre_eval" required>
+                </div>
+                <div class="form-group">
+                    <label for="cours_eval">Cours associé:</label>
+                    <select id="cours_eval" name="cours_id" required>
+                        <option value="">-- Sélectionnez un cours --</option>
+                        {% for cours in cours_list %}
+                            <option value="{{ cours.id }}">{{ cours.titre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date_eval">Date de l'évaluation:</label>
+                    <input type="date" id="date_eval" name="date_eval" required>
+                </div>
+                <div class="form-group">
+                    <label for="note_max">Note maximale:</label>
+                    <input type="number" id="note_max" name="note_max" min="0" required>
+                </div>
+                <button type="submit">Ajouter l'évaluation</button>
+            </form>
+        </div>
+
+        <!-- Liste des éléments existants -->
+        <div class="section">
+            <h2>Vos cours existants</h2>
+            {% if cours_list %}
+                <ul>
+                    {% for cours in cours_list %}
+                        <li>{{ cours.titre }} - {{ cours.description }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucun cours créé pour le moment.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

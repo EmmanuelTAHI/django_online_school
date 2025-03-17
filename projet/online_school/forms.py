@@ -30,6 +30,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser  # Changez ici pour utiliser CustomUser
+<<<<<<< HEAD
         fields = ["username", "email", "password1", "password2",  'role',]
 def register(request):
     if request.method == "POST":
@@ -45,3 +46,15 @@ def register(request):
         form = CustomUserCreationForm()
 
     return render(request, 'registration/register.html', {'form': form})
+=======
+        fields = ["username", "email", "password1", "password2"]
+        
+
+from django import forms
+from .models import Cours
+
+class CoursForm(forms.ModelForm):
+    class Meta:
+        model = Cours
+        fields = ['titre', 'description', 'date_debut', 'date_fin']
+>>>>>>> a22106b4e75243569d8303c282204ed625154228

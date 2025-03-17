@@ -5,6 +5,7 @@ from . import views
 from django.contrib.auth import views as auth_views
 from .views import activate_account
 
+
 urlpatterns = [
     path('', views.index, name="index"),
     path("about/", views.about, name="about"),
@@ -15,6 +16,10 @@ urlpatterns = [
     path("pricing/", views.pricing, name="pricing"),
     path("starter-page/", views.starter_page, name="starter-page"),
     path("trainers/", views.trainers, name="trainers"),
+    path("ajouter/", views.ajouter, name="ajouter"),
+    path("add_cours/", views.add_cours, name="add_cours"),
+
+    
 
     path("login/", views.connexion, name="login"),
     path("register/", views.inscription, name="register"),
