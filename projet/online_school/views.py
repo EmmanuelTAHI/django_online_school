@@ -12,6 +12,7 @@ from .forms import CustomUserCreationForm
 
 
 def index(request):
+    print(f"Utilisateur : {request.user}, Authentifié : {request.user.is_authenticated}, Rôle : {getattr(request.user, 'role', 'Non défini')}")
     return render(request, 'online_school/index.html')
 
 
@@ -133,3 +134,52 @@ def activate_account(request, uidb64, token):
         return redirect("index")
 
     return render(request, "registration/activation_failed.html")  # Page d’erreur
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Cours, Etudiant, Inscription
+
+@login_required
+def acceder_cours(request):
+    # Récupère les cours auxquels l'étudiant est inscrit
+    if request.user.role == 'etudiant':
+        etudiant = Etudiant.objects.get(user=request.user)
+        inscriptions = Inscription.objects.filter(etudiant=etudiant)
+        cours = [inscription.cours for inscription in inscriptions]
+        return render(request, 'etudiant/acceder_cours.html', {'cours': cours})
+    return render(request, 'access_denied.html', {'message': "Vous n'êtes pas autorisé à accéder à cette page."})
+
+@login_required
+def participer_forum(request):
+    if request.user.role == 'etudiant':
+        return render(request, 'etudiant/participer_forum.html')
+    return render(request, 'access_denied.html', {'message': "Vous n'êtes pas autorisé à accéder à cette page."})
+
+@login_required
+def passer_quiz(request):
+    if request.user.role == 'etudiant':
+        return render(request, 'etudiant/passer_quiz.html')
+    return render(request, 'access_denied.html', {'message': "Vous n'êtes pas autorisé à accéder à cette page."})
+
+@login_required
+def soumettre_devoir(request):
+    if request.user.role == 'etudiant':
+        if request.method == 'POST':
+            # Logique pour traiter le formulaire de soumission (à implémenter)
+            pass
+        return render(request, 'etudiant/soumettre_devoir.html')
+    return render(request, 'access_denied.html', {'message': "Vous n'êtes pas autorisé à accéder à cette page."})
+
+@login_required
+def consulter_notes(request):
+    if request.user.role == 'etudiant':
+        try:
+            etudiant = Etudiant.objects.get(user=request.user)
+            score = etudiant.score_etudiant  # Assurez-vous que ce champ existe
+            return render(request, 'etudiant/consulter_notes.html', {'score': score})
+        except Etudiant.DoesNotExist:
+            # Créez un nouvel Etudiant si aucun n'existe
+            etudiant = Etudiant(user=request.user)
+            etudiant.save()
+            messages.success(request, "Un profil Étudiant a été créé pour vous.")
+            return redirect('consulter_notes')  # Redirigez pour recharger la page
+    return render(request, 'access_denied.html', {'message': "Vous n'êtes pas autorisé à accéder à cette page."})

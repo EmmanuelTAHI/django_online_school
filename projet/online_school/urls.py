@@ -26,6 +26,11 @@ urlpatterns = [
     path('mot-de-passe-oublie/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="registration/password_reset_confirm.html"), name="password_reset_confirm"),
     path('mot-de-passe-oublie/complet/', auth_views.PasswordResetCompleteView.as_view(template_name="registration/password_reset_complete.html"), name="password_reset_complete"),
     path("deconnexion/", views.deconnexion, name="deconnexion"),
+    path('etudiant/acceder-cours/', views.acceder_cours, name='acceder_cours'),
+    path('etudiant/participer-forum/', views.participer_forum, name='participer_forum'),
+    path('etudiant/passer-quiz/', views.passer_quiz, name='passer_quiz'),
+    path('etudiant/soumettre-devoir/', views.soumettre_devoir, name='soumettre_devoir'),
+    path('etudiant/consulter-notes/', views.consulter_notes, name='consulter_notes'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Gestion des fichiers médias en mode debug

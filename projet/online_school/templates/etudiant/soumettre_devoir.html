@@ -1,0 +1,11 @@
+{% extends 'online_school/base.html' %}
+{% block content %}
+<div class="container">
+  <h2>Soumettre un devoir</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="devoir" required>
+    <button type="submit" class="btn btn-primary">Soumettre</button>
+  </form>
+</div>
+{% endblock %}

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'online_school.apps.OnlineSchoolConfig',
 
-    'ckeditor',
+    'django_ckeditor_5',
     'crispy_forms',
     'crispy_bootstrap5',
     'ckeditor_uploader',  # pour avoir un gestionnaire d'images
@@ -145,6 +145,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', 'undo', 'redo'
+        ],
+    },
+    'extends': {
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', 'undo', 'redo'
+        ],
+        'language': 'fr',  # Définir la langue (optionnel)
+    },
+}
+
+# Optional: Set the upload path for images
+CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.DefaultStorage"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

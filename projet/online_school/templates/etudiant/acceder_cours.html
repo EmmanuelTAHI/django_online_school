@@ -1,0 +1,15 @@
+{% extends 'online_school/base.html' %}
+{% block content %}
+<div class="container">
+  <h2>Mes cours</h2>
+  {% if cours %}
+    <ul>
+    {% for cours in cours %}
+      <li>{{ cours.titre }}</li>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>Vous n'êtes inscrit à aucun cours.</p>
+  {% endif %}
+</div>
+{% endblock %}
