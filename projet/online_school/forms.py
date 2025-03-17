@@ -29,3 +29,11 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser  # Changez ici pour utiliser CustomUser
         fields = ["username", "email", "password1", "password2"]
+
+
+from .models import Paiement  
+
+class PaiementForm(forms.ModelForm):
+    class Meta:
+        model = Paiement
+        fields = ['etudiant', 'montant']

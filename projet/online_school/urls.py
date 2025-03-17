@@ -4,17 +4,17 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 from .views import activate_account
+from .views import create_payment
+from .views import comptable_dashboard
+from .views import liste_paiements
+
 
 urlpatterns = [
     path('', views.index, name="index"),
-    path("about/", views.about, name="about"),
     path("contact/", views.contact, name="contact"),
-    path("courses/", views.courses, name="courses"),
-    path("course-details/", views.course_details, name="course-details"),
-    path("events/", views.events, name="events"),
-    path("pricing/", views.pricing, name="pricing"),
     path("starter-page/", views.starter_page, name="starter-page"),
-    path("trainers/", views.trainers, name="trainers"),
+    path('dashboard_comptable/', comptable_dashboard, name='dashboard_comptable'),
+    path('paiements/', liste_paiements, name='liste_paiement'),
 
     path("login/", views.connexion, name="login"),
     path("register/", views.inscription, name="register"),

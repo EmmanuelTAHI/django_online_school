@@ -15,41 +15,26 @@ def index(request):
     return render(request, 'online_school/index.html')
 
 
-def about(request):
-    return render(request, 'online_school/about.html')
-
-
 def contact(request):
     return render(request, 'online_school/contact.html')
-
-
-def courses(request):
-    return render(request, 'online_school/courses.html')
 
 
 def course_details(request):
     return render(request, 'online_school/course-details.html')
 
 
-def events(request):
-    return render(request, 'online_school/events.html')
-
-
-def pricing(request):
-    return render(request, 'online_school/pricing.html')
-
-
 def starter_page(request):
     return render(request, 'online_school/starter-page.html')
 
-
-def trainers(request):
-    return render(request, 'online_school/trainers.html')
 
 
 # ==============================
 # 🔐 Authentification (Connexion, Inscription, Déconnexion)
 # ==============================
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
 def connexion(request):
     if request.method == 'POST':
@@ -59,11 +44,21 @@ def connexion(request):
 
         if user:
             login(request, user)
-            # Vérifier les rôles de l'utilisateur
+
+            # Vérification des rôles et redirection
             if user.is_superuser:
-                return redirect('login')
-            else:
-                return redirect('index')
+                return redirect('index')  # Redirection admin
+
+            if hasattr(user, 'role'):  # Vérifie si le champ "role" existe
+                if user.role == 'etudiant':
+                    return redirect('dashboard_etudiant')
+                elif user.role == 'comptable':
+                    return redirect('online_school/dashboard_comptable')
+                else:
+                    return redirect('index')  # Par défaut
+            
+            return redirect('index')
+
         else:
             messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
 
@@ -133,3 +128,49 @@ def activate_account(request, uidb64, token):
         return redirect("index")
 
     return render(request, "registration/activation_failed.html")  # Page d’erreur
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
+from .models import Paiement, Comptable
+from .forms import PaiementForm
+
+@login_required
+def create_payment(request):
+    try:
+        comptable = Comptable.objects.get(user=request.user)
+    except Comptable.DoesNotExist:
+        return HttpResponseForbidden("Vous devez être un comptable pour effectuer un paiement.")
+
+    if request.method == 'POST':
+        form = PaiementForm(request.POST)
+        if form.is_valid():
+            paiement = form.save(commit=False)
+            paiement.accountant = comptable
+            paiement.save()
+            return redirect('liste_paiements')
+    else:
+        form = PaiementForm()
+
+    return render(request, 'online_school/dashboard_comptable.html', {'form': form})
+
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
+from django.shortcuts import render
+@login_required
+def comptable_dashboard(request):
+    if request.user.role != 'comptable':
+        return HttpResponseForbidden("Accès interdit")
+    return render(request, 'online_school/dashboard_comptable.html')
+
+def liste_paiements(request):
+
+    if not request.user.is_authenticated or request.user.role != 'comptable':
+        return HttpResponseForbidden("Accès interdit")  
+
+
+    paiements = Paiement.objects.all()
+
+
+    return render(request, 'online_school/liste_paiement.html', {'paiements': paiements})

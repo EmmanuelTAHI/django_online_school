@@ -1,14 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 
-# Utilisateur générique
+
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     role_choices = [
         ('admin', 'Admin'),
         ('responsable_scolarite', 'Responsable Scolarité'),
         ('enseignant', 'Enseignant'),
-        ('etudiant', 'Étudiant')
+        ('etudiant', 'Étudiant'),
+        ('comptable', 'Comptable'),
     ]
     role = models.CharField(max_length=25, choices=role_choices, default='etudiant')
 
@@ -40,24 +41,24 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
 
-# Admin
+
 class Admin(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
-# Responsable Scolarité
+
 class ResponsableScolarite(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
-# Enseignant
+
 class Enseignant(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
-# Étudiant
+
 class Etudiant(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     cours = models.ManyToManyField('Cours', through='Inscription')
 
-# Structure Académique
+
 class StructureAcademique(models.Model):
     nom = models.CharField(max_length=255)
     description = models.TextField()
@@ -89,7 +90,6 @@ class Lecon(models.Model):
 class Chapitre(models.Model):
     nom_chapitre = models.CharField(max_length=255)
     lecons = models.ManyToManyField(Lecon)
-
 
 
 class Inscription(models.Model):
@@ -134,8 +134,33 @@ class Forum(models.Model):
 class Paiement(models.Model):
     montant = models.DecimalField(max_digits=10, decimal_places=2)
     date_paiement = models.DateField()
-    etudiant = models.ForeignKey(Etudiant, on_delete=models.CASCADE)
+    etudiant = models.ForeignKey("Etudiant", on_delete=models.CASCADE)
+    accountant = models.ForeignKey("Comptable", on_delete=models.SET_NULL, null=True, blank=True)
+
+    
+    def __str__(self):
+        return f"Paiement de {self.montant}$ pour {self.etudiant.user.username}"
 
 
 class Comptabilite(models.Model):
     paiements = models.ManyToManyField(Paiement)
+
+
+class Comptable(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Comptable: {self.user.username}"
+
+
+from django import forms
+from .models import Paiement
+
+class PaiementForm(forms.ModelForm):
+    class Meta:
+        model = Paiement
+        fields = ['etudiant', 'montant']
+
+
+class OnlineSchoolChatParticipant(models.Model):
+    customuser = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, blank=True)

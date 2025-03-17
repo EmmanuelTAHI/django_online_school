@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     CustomUser, Admin, ResponsableScolarite, StructureAcademique, Enseignant,
     Matiere, Cours, FormatCours, Lecon, Chapitre, Etudiant, Inscription,
-    Evaluation, Resultat, Notes, Chat, Forum, Paiement, Comptabilite
+    Evaluation, Resultat, Notes, Chat, Forum, Paiement, Comptabilite, Comptable
 )
 
 
@@ -115,3 +115,8 @@ class PaiementAdmin(admin.ModelAdmin):
 @admin.register(Comptabilite)
 class ComptabiliteAdmin(admin.ModelAdmin):
     list_display = ('id',)
+
+
+@admin.register(Comptable)
+class ComptableAdmin(admin.ModelAdmin):
+    list_display = ('user',)

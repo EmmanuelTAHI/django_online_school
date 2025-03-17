@@ -1,0 +1,109 @@
+{% extends 'online_school/base.html' %}
+{% load static %}
+
+{% block style %}
+<style>
+  .payment-form-container {
+    padding: 40px 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .payment-form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-title {
+    color: #37517e;
+    margin-bottom: 25px;
+    font-weight: 600;
+    text-align: center;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #444444;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .btn-submit {
+    background-color: #37517e;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-submit:hover {
+    background-color: #2c4067;
+  }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="breadcrumbs">
+  <div class="container">
+    <h2>Paiement des Frais</h2>
+    <p>Enregistrement d'un nouveau paiement</p>
+  </div>
+</div>
+
+<section class="payment-form-container">
+  <div class="payment-form">
+    <h2 class="form-title">Effectuer un paiement</h2>
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="id_amount">Somme (FCFA):</label>
+        <input type="number" name="amount" id="id_amount" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="id_payment_date">Date du paiement:</label>
+        <input type="date" name="payment_date" id="id_payment_date" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="id_payer_name">Nom du payeur:</label>
+        <input type="text" name="payer_name" id="id_payer_name" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="id_academic_year">Année universitaire:</label>
+        <select name="academic_year" id="id_academic_year" class="form-control" required>
+          <option value="">Sélectionner une année</option>
+          <option value="2024-2025">2024-2025</option>
+          <option value="2023-2024">2023-2024</option>
+          <option value="2022-2023">2022-2023</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <button type="submit" class="btn-submit">Valider le paiement</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock content %}

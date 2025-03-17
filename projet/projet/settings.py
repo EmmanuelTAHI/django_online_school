@@ -88,7 +88,7 @@ ROOT_URLCONF = 'projet.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'online_school' / 'templates',],
+        'DIRS': [BASE_DIR / "projet/online_school/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
