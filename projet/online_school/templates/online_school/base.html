@@ -62,7 +62,19 @@
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
-        <a class="btn-getstarted" href="{% url 'courses' %}">Connexion</a>
+        <!-- Header Btn Start -->
+        {% if user.is_authenticated %}
+        <div class="btn-getstarted">
+           <a href="{% url 'deconnexion' %}">
+               <button class="" type="button">{{ user.username }}</button>
+           </a>
+        </div>
+        {% else %}
+        <div class="header-btn d-inline-flex">
+            <a class="btn-getstarted" href="{% url 'login' %}">Connexion</a>
+        </div>
+        {% endif %}
+        <!-- Header Btn End -->
 
     </div>
 </header>

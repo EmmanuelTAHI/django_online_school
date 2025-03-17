@@ -1,45 +1,66 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-
-
-# Create your models here.
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
 # Utilisateur générique
-from django.contrib.auth.models import AbstractUser
+class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True)
+    role_choices = [
+        ('admin', 'Admin'),
+        ('responsable_scolarite', 'Responsable Scolarité'),
+        ('enseignant', 'Enseignant'),
+        ('etudiant', 'Étudiant')
+    ]
+    role = models.CharField(max_length=25, choices=role_choices, default='etudiant')
 
-class User(AbstractUser):
     groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='online_school_users',  # Change the related_name to avoid conflict
-        blank=True
+        Group,
+        related_name='custom_users',
+        blank=True,
+        help_text='Les groupes auxquels cet utilisateur appartient.',
+        verbose_name='groupes'
     )
+
     user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='online_school_users',  # Change the related_name to avoid conflict
-        blank=True
+        Permission,
+        related_name='custom_users',
+        blank=True,
+        help_text='Permissions spécifiques pour cet utilisateur.',
+        verbose_name='permissions utilisateur'
     )
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            if self.role == 'admin':
+                self.is_superuser = True
+                self.is_staff = True
+            elif self.role in ['responsable_scolarite', 'enseignant']:
+                self.is_staff = True
+        super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.username} ({self.get_role_display()})"
 
 # Admin
 class Admin(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
 # Responsable Scolarité
 class ResponsableScolarite(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
+# Enseignant
+class Enseignant(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+
+# Étudiant
+class Etudiant(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    cours = models.ManyToManyField('Cours', through='Inscription')
 
 # Structure Académique
 class StructureAcademique(models.Model):
     nom = models.CharField(max_length=255)
     description = models.TextField()
-
-
-# Cours et Matières
-class Enseignant(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class Matiere(models.Model):
@@ -70,11 +91,6 @@ class Chapitre(models.Model):
     lecons = models.ManyToManyField(Lecon)
 
 
-# Étudiant
-class Etudiant(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    cours = models.ManyToManyField(Cours, through='Inscription')
-
 
 class Inscription(models.Model):
     etudiant = models.ForeignKey(Etudiant, on_delete=models.CASCADE)
@@ -104,7 +120,7 @@ class Notes(models.Model):
 
 # Chat et Forum
 class Chat(models.Model):
-    participants = models.ManyToManyField(User)
+    participants = models.ManyToManyField(CustomUser)
     historique_message = models.TextField()
 
 
