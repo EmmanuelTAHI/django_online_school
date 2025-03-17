@@ -8,7 +8,8 @@ class CustomUser(AbstractUser):
         ('admin', 'Admin'),
         ('responsable_scolarite', 'Responsable Scolarité'),
         ('enseignant', 'Enseignant'),
-        ('etudiant', 'Étudiant')
+        ('etudiant', 'Étudiant'),
+        ('comptable', 'Comptable'),
     ]
     role = models.CharField(max_length=25, choices=role_choices, default='etudiant')
 
@@ -37,9 +38,8 @@ class CustomUser(AbstractUser):
                 self.is_staff = True
         super().save(*args, **kwargs)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.username} ({self.get_role_display()})"
-
 # Admin
 class Admin(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
@@ -62,40 +62,37 @@ class StructureAcademique(models.Model):
     nom = models.CharField(max_length=255)
     description = models.TextField()
 
-
 class Matiere(models.Model):
     nom = models.CharField(max_length=255)
     enseignant = models.ForeignKey(Enseignant, on_delete=models.CASCADE)
 
-
 class Cours(models.Model):
     titre = models.CharField(max_length=255)
-    contenu = models.TextField()
-    matiere = models.ForeignKey(Matiere, on_delete=models.CASCADE)
+    description = models.TextField()
+    date_debut = models.DateField()
+    date_fin = models.DateField()
+    matiere = models.ForeignKey('Matiere', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.titre
 
 class FormatCours(models.Model):
     type_choices = [('texte', 'Texte'), ('image', 'Image'), ('pdf', 'PDF'), ('video', 'Vidéo')]
     type = models.CharField(max_length=10, choices=type_choices)
-    cours = models.ForeignKey(Cours, on_delete=models.CASCADE)
-
+    cours = models.ForeignKey('Cours', on_delete=models.CASCADE)
 
 class Lecon(models.Model):
     titre_lecon = models.CharField(max_length=255)
     num_lecon = models.IntegerField()
-    cours = models.ForeignKey(Cours, on_delete=models.CASCADE)
-
+    cours = models.ForeignKey('Cours', on_delete=models.CASCADE)
 
 class Chapitre(models.Model):
     nom_chapitre = models.CharField(max_length=255)
     lecons = models.ManyToManyField(Lecon)
 
-
-
 class Inscription(models.Model):
     etudiant = models.ForeignKey(Etudiant, on_delete=models.CASCADE)
-    cours = models.ForeignKey(Cours, on_delete=models.CASCADE)
-
+    cours = models.ForeignKey('Cours', on_delete=models.CASCADE)
 
 # Évaluation et Résultats
 class Evaluation(models.Model):
@@ -103,32 +100,27 @@ class Evaluation(models.Model):
     type = models.CharField(max_length=10, choices=type_choices)
     date_limite = models.DateField()
     nombre_tentatives = models.IntegerField()
-    cours = models.ForeignKey(Cours, on_delete=models.CASCADE)
-
+    cours = models.ForeignKey('Cours', on_delete=models.CASCADE)
 
 class Resultat(models.Model):
     etudiant = models.ForeignKey(Etudiant, on_delete=models.CASCADE)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
     note = models.FloatField()
 
-
 # Notes
 class Notes(models.Model):
     etudiant = models.ForeignKey(Etudiant, on_delete=models.CASCADE)
     points = models.FloatField()
-
 
 # Chat et Forum
 class Chat(models.Model):
     participants = models.ManyToManyField(CustomUser)
     historique_message = models.TextField()
 
-
 class Forum(models.Model):
     nom_du_forum = models.CharField(max_length=255)
     date_creation = models.DateField(auto_now_add=True)
-    cours = models.ForeignKey(Cours, on_delete=models.CASCADE)
-
+    cours = models.ForeignKey('Cours', on_delete=models.CASCADE)
 
 # Paiements et Comptabilité
 class Paiement(models.Model):
@@ -136,6 +128,8 @@ class Paiement(models.Model):
     date_paiement = models.DateField()
     etudiant = models.ForeignKey(Etudiant, on_delete=models.CASCADE)
 
-
 class Comptabilite(models.Model):
     paiements = models.ManyToManyField(Paiement)
+
+
+    

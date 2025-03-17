@@ -133,3 +133,54 @@ def activate_account(request, uidb64, token):
         return redirect("index")
 
     return render(request, "registration/activation_failed.html")  # Page d’erreur
+
+
+from django.shortcuts import render, redirect
+from .models import Cours, Evaluation
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def dashboard_professeur(request):
+    cours_list = Cours.objects.filter(professeur=request.user)
+    context = {
+        'cours_list': cours_list,
+    }
+    return render(request, 'online_school/teacher_dashboard.html', context)
+
+@login_required
+def ajouter_cours(request):
+    if request.method == 'POST':
+        Cours.objects.create(
+            titre=request.POST['titre_cours'],
+            description=request.POST['description'],
+            professeur=request.user
+        )
+        return redirect('dashboard_professeur')
+    return redirect('dashboard_professeur')
+
+@login_required
+def ajouter_devoir(request):
+    if request.method == 'POST':
+        Evaluation.objects.create(
+            titre=request.POST['titre_devoir'],
+            cours_id=request.POST['cours_id'],
+            date_limite=request.POST['date_limite']
+        )
+        return redirect('dashboard_professeur')
+    return redirect('dashboard_professeur')
+
+@login_required
+def ajouter_evaluation(request):
+    if request.method == 'POST':
+        Evaluation.objects.create(
+            titre=request.POST['titre_eval'],
+            cours_id=request.POST['cours_id'],
+            date=request.POST['date_eval'],
+            note_max=request.POST['note_max']
+        )
+        return redirect('dashboard_professeur')
+    return redirect('dashboard_professeur')
+
+def ajouter(request):
+    return(request,'ajouter')
+    
