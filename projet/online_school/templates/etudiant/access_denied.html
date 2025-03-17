@@ -1,0 +1,8 @@
+{% extends 'online_school/base.html' %}
+{% block content %}
+<div class="container">
+  <h2>Accès refusé</h2>
+  <p>{{ message }}</p>
+  <a href="{% url 'login' %}" class="btn btn-primary">Se connecter</a>
+</div>
+{% endblock %}

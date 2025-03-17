@@ -3,6 +3,8 @@ from .models import CustomUser
 # from ckeditor.widgets import CKEditorWidget
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
+from django.shortcuts import redirect, render
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -28,4 +30,18 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser  # Changez ici pour utiliser CustomUser
-        fields = ["username", "email", "password1", "password2"]
+        fields = ["username", "email", "password1", "password2",  'role',]
+def register(request):
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # Redirige vers une page de connexion ou un message de succès
+            return redirect('login')  # Remplace 'login' par l'URL de ta page de connexion
+        else:
+            # Ajoute un message d'erreur ou d'autres actions selon besoin
+            print(form.errors)  # Pour afficher les erreurs dans la console pendant le développement
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'registration/register.html', {'form': form})
